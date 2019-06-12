@@ -1,0 +1,15 @@
+"C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\arm\bin\armproc.dll" 
+
+"C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\arm\bin\armjlink2.dll" 
+
+"C:\Users\ENGENUICS5\Desktop\Razor_Atmel\firmware_dotmatrix\iar_7_20_1\Debug\Exe\mpgl2.out" 
+
+--plugin="C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\arm\bin\armbat.dll" 
+
+--device_macro="C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\arm\config\debugger\Microchip\SAM3U.dmac" 
+
+--flash_loader="C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\arm\config\flashloader\Microchip\sam3u2\sam3u2-flash.board" 
+
+
+
+

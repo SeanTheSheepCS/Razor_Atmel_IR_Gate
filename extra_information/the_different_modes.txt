@@ -1,0 +1,14 @@
+START MODE:
+-Upon UPIMO active, timer starts, sends out ANTStartTimerCommand
+-Upon ANTStartTimer command, does nothing
+-Upon ANTEndTimer command, ends timer and sends ANTEndTimerCommand
+
+INTERMEDIATE MODE:
+-Upon UPIMO active, timer freezes, does not send out signal
+-Upon ANTStartTimer command, starts its timer and sends ANTStartTimerCommand
+-Upon ANTEndTimer command, ends timer and sends ANTEndTimerCommand
+
+FINISH MODE:
+-Upon UPIMO active, timer freezes, sends out ANTEndTimerCommand
+-Upon ANTStartTimer command, starts its timer and sends ANTStartTimerCommand
+-Upon ANTEndTimer command, ends timer and sends ANTEndTimerCommand
