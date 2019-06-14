@@ -1,44 +1,34 @@
 /*!**********************************************************************************************************************
-@file input_pins.h        
-@brief Header file for input_pins.c
+@file output_pins.h        
+@brief Header file for output_pins.c
 ***********************************************************************************************************************/
 
-#ifndef __INPUTPINS_H
-#define __INPUTPINS_H
+#ifndef __OUTPUTPINS_H
+#define __OUTPUTPINS_H
 
 /***********************************************************************************************************************
 Type Definitions
 ***********************************************************************************************************************/
 
-typedef enum {INPUT_PIN_VOLTAGE_LOW = 0, INPUT_PIN_VOLTAGE_HIGH = 1} InputPinStateType; 
-typedef enum {INPUT_PIN_UPIMO = 0} InputPinNameType;
-typedef enum {INPUT_PIN_PORTA = 0, INPUT_PIN_PORTB = 0x80} InputPinPortType;
-typedef enum {INPUT_PIN_ACTIVE_LOW = 0, INPUT_PIN_ACTIVE_HIGH = 1} InputPinActiveType;
-
-typedef struct 
-{
-  InputPinStateType eCurrentState;
-  InputPinStateType eNewState;
-  bool bNewActivityFlag;
-}InputPinStatusType;
+typedef enum {OUTPUT_PIN_VOLTAGE_LOW = 0, OUTPUT_PIN_VOLTAGE_HIGH = 1} OutputPinStateType; 
+typedef enum {UPOMI_PIN = 0} OutputPinNameType;
+typedef enum {OUTPUT_PIN_PORTA = 0, OUTPUT_PIN_PORTB = 0x80} OutputPinPortType;
 
 typedef struct
 {
-  InputPinActiveType eActiveState;
-  InputPinPortType ePort;
-}InputPinConfigType;
+  OutputPinPortType ePort;
+}OutputPinConfigType;
 
 
 /***********************************************************************************************************************
 Constants / Definitions
 ***********************************************************************************************************************/
-#define INPUT_PIN_INIT_MSG_TIMEOUT         (u32)1000     /* Time in ms for init message to send */
-#define INPUT_PIN_DEBOUNCE_TIME            (u32)100       /* Time in ms for button debouncing */
+#define OUTPUT_PIN_INIT_MSG_TIMEOUT         (u32)1000     /* Time in ms for init message to send */
 
-#define GPIOA_INPUT_PINS (u32)(PA_11_BLADE_UPIMO)
-#define INPUT_PINS_IN_USE 1
+#define GPIOA_OUTPUT_PINS (u32)(PA_12_BLADE_UPOMI)
+#define OUTPUT_PINS_IN_USE 1
   
-#define INPUT_PIN_UPIMO 0
+#define UPOMI_PIN 0
 
 /***********************************************************************************************************************
 Function Declarations
@@ -47,16 +37,15 @@ Function Declarations
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool IsPinActive(u32 u32InputPin);
-void PinActiveAcknowledge(u32 u32InputPin);
-bool HasThePinBeenActivated(u32 u32InputPin);
+void turnOutputPinToVoltageHigh(u32 u32OutputPin);
+void turnOutputPinToVoltageLow(u32 u32OutputPin);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-void InputPinInitialize(void);                        
-void InputPinRunActiveState(void);
-u32 GetInputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_);
+void OutputPinInitialize(void);                        
+void OutputPinRunActiveState(void);
+u32 GetOutputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
@@ -66,11 +55,9 @@ u32 GetInputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_);
 /***********************************************************************************************************************
 State Machine Declarations
 ***********************************************************************************************************************/
-static void InputPinSM_Idle(void);                
-static void InputPinSM_PinActive(void);        
+static void OutputPinSM_Idle(void);                      
 
-
-#endif /* __INPUTPINS_H */
+#endif /* __OUTPUTPINS_H */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */

@@ -57,6 +57,7 @@ Includes
 #include "ant_api.h"
 #include "buttons.h"
 #include "input_pins.h"
+#include "output_pins.h"
 #include "leds.h" 
 #include "messaging.h"
 #include "timer.h" 
@@ -122,7 +123,8 @@ Includes
 #define NUMBER_APPLICATIONS             (u8)9             /* Total number of applications */
 #endif /* MPGL2 specific application flags */
 
-#define _APPLICATION_FLAGS_PIN          0x00000100
+#define _APPLICATION_FLAGS_INPUT_PINS          0x00000100 /* InputPinStateMachine */
+#define _APPLICATION_FLAGS_OUTPUT_PINS          0x00000200 /*OutputPinStateMachine */
 
 /**********************************************************************************************************************
 !!!!! External device peripheral assignments

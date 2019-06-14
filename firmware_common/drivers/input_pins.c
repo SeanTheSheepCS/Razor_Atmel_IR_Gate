@@ -2,11 +2,11 @@
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
-All Global variable names shall start with "G_<type>Pin"
+All Global variable names shall start with "G_<type>InputPin"
 ***********************************************************************************************************************/
 /* New variables */
-volatile bool G_abPinDebounceActive[INPUT_PINS_IN_USE];      /*!< @brief Flags for pins being debounced */
-volatile u32 G_au32PinDebounceTimeStart[INPUT_PINS_IN_USE];  /*!< @brief Pin debounce start time */
+volatile bool G_abInputPinDebounceActive[INPUT_PINS_IN_USE];      /*!< @brief Flags for pins being debounced */
+volatile u32 G_au32InputPinDebounceTimeStart[INPUT_PINS_IN_USE];  /*!< @brief Pin debounce start time */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
@@ -18,24 +18,23 @@ extern volatile u32 G_u32ApplicationFlags;                  /*!< @brief From mai
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
-Variable names shall start with "Pin_<type>" and be declared as static.
+Variable names shall start with "InputPin_<type>" and be declared as static.
 ***********************************************************************************************************************/
-static fnCode_type Pin_pfnStateMachine;                  /*!< @brief The pin application state machine function pointer */
+static fnCode_type InputPin_pfnStateMachine;                  /*!< @brief The pin application state machine function pointer */
 
-static ButtonStateType Pin_aeCurrentState[INPUT_PINS_IN_USE];/*!< @brief Current pressed state of pin */
-static ButtonStateType Pin_aeNewState[INPUT_PINS_IN_USE];    /*!< @brief New (pending) pressed state of pin */
-static u32 Pin_au32HoldTimeStart[INPUT_PINS_IN_USE];         /*!< @brief System 1ms time when a pin press started */
-static bool Pin_abNewPress[INPUT_PINS_IN_USE];               /*!< @brief Flags to indicate a pin was pressed */    
+static InputPinStateType InputPin_aeCurrentState[INPUT_PINS_IN_USE];/*!< @brief Current pressed state of pin */
+static InputPinStateType InputPin_aeNewState[INPUT_PINS_IN_USE];    /*!< @brief New (pending) pressed state of pin */
+static u32 InputPin_au32HoldTimeStart[INPUT_PINS_IN_USE];         /*!< @brief System 1ms time when a pin press started */
+static bool InputPin_abNewPress[INPUT_PINS_IN_USE];               /*!< @brief Flags to indicate a pin was pressed */    
 
 
 /*!*********** %BUTTON% EDIT BOARD-SPECIFIC GPIO DEFINITIONS BELOW ***************/
 /* Add all of the GPIO pin names for the buttons in the system.  
 The order of the definitions below must match the order of the definitions provided in configuration.h */ 
 
-static const u32 Pin_au32InputPins[INPUT_PINS_IN_USE] = { PA_12_BLADE_UPOMI , PA_11_BLADE_UPIMO};
-static PinConfigType Pins_asArray[INPUT_PINS_IN_USE] = 
-{{INPUT_ACTIVE_HIGH, PIN_PORTA}, /* UPOMI  */
- {INPUT_ACTIVE_HIGH, PIN_PORTA}, /* UPIMO  */
+static const u32 InputPin_au32InputPins[INPUT_PINS_IN_USE] = {PA_11_BLADE_UPIMO};
+static InputPinConfigType InputPins_asArray[INPUT_PINS_IN_USE] = 
+{{INPUT_PIN_ACTIVE_HIGH, INPUT_PIN_PORTA}, /* UPIMO  */
 };   
 
 void InputPinInitialize(void)
@@ -50,36 +49,36 @@ void InputPinInitialize(void)
   /* Setup default data for all of the buttons in the system */
   for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
   {
-    G_abPinDebounceActive[i] = FALSE;
-    Pin_aeCurrentState[i]    = VOLTAGE_LOW;
-    Pin_aeNewState[i]        = VOLTAGE_LOW;
+    G_abInputPinDebounceActive[i] = FALSE;
+    InputPin_aeCurrentState[i]    = INPUT_PIN_VOLTAGE_LOW;
+    InputPin_aeNewState[i]        = INPUT_PIN_VOLTAGE_LOW;
   }
   
   /* Create masks based on any buttons in the system.  It's ok to have an empty mask. */
   for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
   {
-    if(Pins_asArray[i].ePort == PIN_PORTA)
+    if(InputPins_asArray[i].ePort == INPUT_PIN_PORTA)
     {
-      u32PortAInterruptMask |= Pin_au32InputPins[i];
-      if(Pins_asArray[i].eActiveState == INPUT_ACTIVE_HIGH)
+      u32PortAInterruptMask |= InputPin_au32InputPins[i];
+      if(InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_HIGH)
       {
-        u32PortAActiveHighMask |= Pin_au32InputPins[i];
+        u32PortAActiveHighMask |= InputPin_au32InputPins[i];
       }
-      else if(Pins_asArray[i].eActiveState == INPUT_ACTIVE_LOW)
+      else if(InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_LOW)
       {
-        u32PortAActiveLowMask |= Pin_au32InputPins[i];
+        u32PortAActiveLowMask |= InputPin_au32InputPins[i];
       }
     }
-    else if(Pins_asArray[i].ePort == PIN_PORTB)
+    else if(InputPins_asArray[i].ePort == INPUT_PIN_PORTB)
     {
-      u32PortBInterruptMask |= Pin_au32InputPins[i];
-      if(Pins_asArray[i].eActiveState == INPUT_ACTIVE_HIGH)
+      u32PortBInterruptMask |= InputPin_au32InputPins[i];
+      if(InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_HIGH)
       {
-        u32PortBActiveHighMask |= Pin_au32InputPins[i];
+        u32PortBActiveHighMask |= InputPin_au32InputPins[i];
       }
-      else if(Pins_asArray[i].eActiveState == INPUT_ACTIVE_LOW)
+      else if(InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_LOW)
       {
-        u32PortBActiveLowMask |= Pin_au32InputPins[i];
+        u32PortBActiveLowMask |= InputPin_au32InputPins[i];
       }
     }
   }
@@ -113,18 +112,18 @@ void InputPinInitialize(void)
   NVIC_EnableIRQ(IRQn_PIOB);
     
   /* Init complete: set function pointer and application flag */
-  Pin_pfnStateMachine = InputPinSM_Idle;
-  G_u32ApplicationFlags |= _APPLICATION_FLAGS_PIN;
+  InputPin_pfnStateMachine = InputPinSM_Idle;
+  G_u32ApplicationFlags |= _APPLICATION_FLAGS_INPUT_PINS;
   DebugPrintf("Input pin task ready\n\r");
 }
 
 bool IsPinActive(u32 u32InputPin)
 {
-  if(Pin_aeCurrentState[u32InputPin] == VOLTAGE_HIGH && Pins_asArray[u32InputPin].eActiveState == INPUT_ACTIVE_HIGH)
+  if(InputPin_aeCurrentState[u32InputPin] == INPUT_PIN_VOLTAGE_HIGH && InputPins_asArray[u32InputPin].eActiveState == INPUT_PIN_ACTIVE_HIGH)
   {
     return TRUE;
   }
-  else if(Pin_aeCurrentState[u32InputPin] == VOLTAGE_LOW && Pins_asArray[u32InputPin].eActiveState == INPUT_ACTIVE_LOW)
+  else if(InputPin_aeCurrentState[u32InputPin] == INPUT_PIN_VOLTAGE_LOW && InputPins_asArray[u32InputPin].eActiveState == INPUT_PIN_ACTIVE_LOW)
   {
     return TRUE;
   }
@@ -136,29 +135,29 @@ bool IsPinActive(u32 u32InputPin)
 
 bool HasThePinBeenActivated(u32 u32InputPin)
 {
-  return Pin_abNewPress[u32InputPin];
+  return InputPin_abNewPress[u32InputPin];
 }
 
 void PinActiveAcknowledge(u32 u32InputPin)
 {
-  Pin_abNewPress[u32InputPin] = FALSE;
+  InputPin_abNewPress[u32InputPin] = FALSE;
 }
 
 void InputPinRunActiveState(void)
 {
-  Pin_pfnStateMachine();
+  InputPin_pfnStateMachine();
 }
 
-u32 GetPinBitLocation(u8 u8Pin_, ButtonPortType ePort_)
+u32 GetInputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_)
 {
   /* Make sure the index is valid */
   if(u8Pin_ < INPUT_PINS_IN_USE) 
   {
     /* Index is valid so check that the button exists on the port */
-    if(Pins_asArray[u8Pin_].ePort == ePort_)
+    if(InputPins_asArray[u8Pin_].ePort == ePort_)
     {
       /* Return the button position if the index is the correct port */
-      return(Pin_au32InputPins[u8Pin_]);
+      return(InputPin_au32InputPins[u8Pin_]);
     }
   }
   
@@ -171,9 +170,9 @@ void InputPinSM_Idle(void)
 {
   for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
   {
-    if(G_abPinDebounceActive[i])
+    if(G_abInputPinDebounceActive[i])
     {
-      Pin_pfnStateMachine = InputPinSM_PinActive;
+      InputPin_pfnStateMachine = InputPinSM_PinActive;
     }
   }
 }
@@ -184,50 +183,50 @@ void InputPinSM_PinActive(void)
   u32 *pu32InterruptAddress;
   
   /* Start by resseting back to Idle in case no buttons are active */
-  Pin_pfnStateMachine = InputPinSM_Idle;
+  InputPin_pfnStateMachine = InputPinSM_Idle;
 
   /* Check for buttons that are debouncing */
   for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
   {
-    /* Load address offsets for the current button */
-    pu32PortAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_PDSR) + Pins_asArray[i].ePort);
-    pu32InterruptAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IER) + Pins_asArray[i].ePort);
+    /* Load address ofsets for the current button */
+    pu32PortAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_PDSR) + InputPins_asArray[i].ePort);
+    pu32InterruptAddress = (u32*)(&(AT91C_BASE_PIOA->PIO_IER) + InputPins_asArray[i].ePort);
     
-    if( G_abPinDebounceActive[i] )
+    if( G_abInputPinDebounceActive[i] )
     {
       /* Still have an active button */
-      Pin_pfnStateMachine = InputPinSM_PinActive;
+      InputPin_pfnStateMachine = InputPinSM_PinActive;
       
-      if( IsTimeUp((u32*)&G_au32PinDebounceTimeStart[i], PIN_DEBOUNCE_TIME) )
+      if( IsTimeUp((u32*)&G_au32InputPinDebounceTimeStart[i], INPUT_PIN_DEBOUNCE_TIME) )
       {
-        if( ~(*pu32PortAddress) & Pin_au32InputPins[i] )
+        if( ~(*pu32PortAddress) & InputPin_au32InputPins[i] )
         {          
-          Pin_aeNewState[i] = VOLTAGE_LOW;
+          InputPin_aeNewState[i] = INPUT_PIN_VOLTAGE_LOW;
         }
         else
         {
-          Pin_aeNewState[i] = VOLTAGE_HIGH;
+          InputPin_aeNewState[i] = INPUT_PIN_VOLTAGE_HIGH;
         }
         
         /* Update if the button state has changed */
-        if( Pin_aeNewState[i] != Pin_aeCurrentState[i] )
+        if( InputPin_aeNewState[i] != InputPin_aeCurrentState[i] )
         {
-          Pin_aeCurrentState[i] = Pin_aeNewState[i];
-          if(Pin_aeCurrentState[i] == VOLTAGE_LOW && Pins_asArray[i].eActiveState == INPUT_ACTIVE_LOW)
+          InputPin_aeCurrentState[i] = InputPin_aeNewState[i];
+          if(InputPin_aeCurrentState[i] == INPUT_PIN_VOLTAGE_LOW && InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_LOW)
           {
-            Pin_abNewPress[i] = TRUE;
-            Pin_au32HoldTimeStart[i] = G_u32SystemTime1ms;
+            InputPin_abNewPress[i] = TRUE;
+            InputPin_au32HoldTimeStart[i] = G_u32SystemTime1ms;
           }
-          else if(Pin_aeCurrentState[i] == VOLTAGE_HIGH && Pins_asArray[i].eActiveState == INPUT_ACTIVE_HIGH)
+          else if(InputPin_aeCurrentState[i] == INPUT_PIN_VOLTAGE_HIGH && InputPins_asArray[i].eActiveState == INPUT_PIN_ACTIVE_HIGH)
           {
-            Pin_abNewPress[i] = TRUE;
-            Pin_au32HoldTimeStart[i] = G_u32SystemTime1ms;
+            InputPin_abNewPress[i] = TRUE;
+            InputPin_au32HoldTimeStart[i] = G_u32SystemTime1ms;
           }
         }
 
         /* Regardless of a good press or not, clear the debounce active flag and re-enable the interrupts */
-        G_abPinDebounceActive[i] = FALSE;
-        *pu32InterruptAddress |= Pin_au32InputPins[i];
+        G_abInputPinDebounceActive[i] = FALSE;
+        *pu32InterruptAddress |= InputPin_au32InputPins[i];
         
       } /* end if( IsTimeUp...) */
     } /* end if(G_abButtonDebounceActive[index]) */

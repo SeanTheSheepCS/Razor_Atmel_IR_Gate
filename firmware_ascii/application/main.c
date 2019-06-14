@@ -59,6 +59,7 @@ void main(void)
 
   ButtonInitialize();
   InputPinInitialize();
+  OutputPinInitialize();
   TimerInitialize();  
   SspInitialize();
   TWIInitialize();
@@ -90,6 +91,7 @@ void main(void)
     LedUpdate();
     ButtonRunActiveState();
     InputPinRunActiveState();
+    OutputPinRunActiveState();
     UartRunActiveState();
     TimerRunActiveState(); 
     SspRunActiveState();

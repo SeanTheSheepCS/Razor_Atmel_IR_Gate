@@ -279,9 +279,9 @@ static void IrGateSM_Idle(void)
     ButtonAcknowledge(BUTTON3);
     CycleMode();
   }
-  else if(HasThePinBeenActivated(UPIMO_PIN) && IrGate_gmCurrentMode == GATE_MODE_START)
+  else if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_START)
   {
-    PinActiveAcknowledge(UPIMO_PIN);
+    PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerActive;
     LCDClearChars(LINE2_START_ADDR, 20);
     SetAntMessageToSend(AntCommand_GetBeginTimerAntMessage());
@@ -320,16 +320,16 @@ static void IrGateSM_TimerActive(void)
     SetAntMessageToSend(AntCommand_GetEndTimerAntMessage());
     IrGate_u32Timeout = G_u32SystemTime1ms;
   }
-  if(HasThePinBeenActivated(UPIMO_PIN) && IrGate_gmCurrentMode == GATE_MODE_INTERMEDIATE)
+  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_INTERMEDIATE)
   {
-    PinActiveAcknowledge(UPIMO_PIN);
+    PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerFrozen;
     SetAntMessageToSend(AntCommand_GetIdleAntMessage());
     IrGate_u32Timeout = G_u32SystemTime1ms;
   }
-  if(HasThePinBeenActivated(UPIMO_PIN) && IrGate_gmCurrentMode == GATE_MODE_FINISH)
+  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_FINISH)
   {
-    PinActiveAcknowledge(UPIMO_PIN);
+    PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerFrozen;
     SetAntMessageToSend(AntCommand_GetEndTimerAntMessage());
     IrGate_u32Timeout = G_u32SystemTime1ms;

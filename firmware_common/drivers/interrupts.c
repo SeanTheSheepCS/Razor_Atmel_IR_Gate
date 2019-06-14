@@ -23,8 +23,8 @@ extern volatile u32 G_u32SystemFlags;                              /* From main.
 
 extern volatile bool G_abButtonDebounceActive[TOTAL_BUTTONS];      /*!<@brief  From buttons.c    */
 extern volatile u32 G_au32ButtonDebounceTimeStart[TOTAL_BUTTONS];  /*!<@brief  From buttons.c    */
-extern volatile bool G_abPinDebounceActive[INPUT_PINS_IN_USE];      /*!<@brief  From input_pins.c    */
-extern volatile u32 G_au32PinDebounceTimeStart[INPUT_PINS_IN_USE];  /*!<@brief  From input_pins.c    */
+extern volatile bool G_abInputPinDebounceActive[INPUT_PINS_IN_USE];      /*!<@brief  From input_pins.c    */
+extern volatile u32 G_au32InputPinDebounceTimeStart[INPUT_PINS_IN_USE];  /*!<@brief  From input_pins.c    */
 
 
 /***********************************************************************************************************************
@@ -212,17 +212,17 @@ void PIOA_IrqHandler(void)
     }
   } /* end button interrupt checking */
   
-  u32PinInterrupts = u32GPIOInterruptSources & GPIOA_PINS;
+  u32PinInterrupts = u32GPIOInterruptSources & GPIOA_INPUT_PINS;
   if(u32PinInterrupts)
   {
     for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
     {
-      u32CurrentPinLocation = GetPinBitLocation(i, PIN_PORTA);
+      u32CurrentPinLocation = GetInputPinBitLocation(i, INPUT_PIN_PORTA);
       if(u32PinInterrupts & u32CurrentPinLocation)
       {
         AT91C_BASE_PIOA->PIO_IDR |= u32CurrentPinLocation;
-        G_abPinDebounceActive[i] = TRUE;
-        G_au32PinDebounceTimeStart[i] = G_u32SystemTime1ms;
+        G_abInputPinDebounceActive[i] = TRUE;
+        G_au32InputPinDebounceTimeStart[i] = G_u32SystemTime1ms;
       }
     }
   }
