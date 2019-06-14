@@ -87,6 +87,7 @@ void IrGateInitialize(void)
   LCDCommand(LCD_CLEAR_CMD);
   LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
   LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
+  TurnOutputPinToTheFollowingFrequency(UPOMI_PIN, 38000);
   /* If good initialization, set state to Idle */
   if( 1 )
   {

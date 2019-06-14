@@ -16,6 +16,7 @@ typedef enum {OUTPUT_PIN_PORTA = 0, OUTPUT_PIN_PORTB = 0x80} OutputPinPortType;
 
 typedef struct
 {
+  OutputPinStateType currentState;
   OutputPinPortType ePort;
 }OutputPinConfigType;
 
@@ -27,6 +28,8 @@ Constants / Definitions
 
 #define GPIOA_OUTPUT_PINS (u32)(PA_12_BLADE_UPOMI)
 #define OUTPUT_PINS_IN_USE 1
+
+#define OUTPUT_PIN_CLOCK_FREQUENCY          (u32)120000000
   
 #define UPOMI_PIN 0
 
@@ -37,8 +40,9 @@ Function Declarations
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-void turnOutputPinToVoltageHigh(u32 u32OutputPin);
-void turnOutputPinToVoltageLow(u32 u32OutputPin);
+void TurnOutputPinToVoltageHigh(u32 u32OutputPin);
+void TurnOutputPinToVoltageLow(u32 u32OutputPin);
+void TurnOutputPinToTheFollowingFrequency(u32 u32OutputPin, u32 u32FrequencyToSetOutputTo);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
@@ -46,6 +50,7 @@ void turnOutputPinToVoltageLow(u32 u32OutputPin);
 void OutputPinInitialize(void);                        
 void OutputPinRunActiveState(void);
 u32 GetOutputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_);
+void UPOMIPinToggler(void);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
