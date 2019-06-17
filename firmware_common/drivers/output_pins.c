@@ -23,9 +23,9 @@ static fnCode_type OutputPin_pfnStateMachine;                  /*!< @brief The p
 /* Add all of the GPIO pin names for the buttons in the system.  
 The order of the definitions below must match the order of the definitions provided in configuration.h */ 
 
-static const u32 OutputPin_au32OutputPins[OUTPUT_PINS_IN_USE] = {PA_11_BLADE_UPIMO};
+static const u32 OutputPin_au32OutputPins[OUTPUT_PINS_IN_USE] = {PA_12_BLADE_UPOMI};
 static OutputPinConfigType OutputPins_asArray[OUTPUT_PINS_IN_USE] = 
-{{OUTPUT_PIN_VOLTAGE_HIGH, OUTPUT_PIN_PORTA}, /* UPIMO  */
+{{OUTPUT_PIN_VOLTAGE_HIGH, OUTPUT_PIN_PORTA}, /* UPOMI  */
 };   
 
 void OutputPinInitialize(void)
@@ -66,6 +66,10 @@ void TurnOutputPinToVoltageHigh(u32 u32OutputPin)
 void TurnOutputPinToTheFollowingFrequency(u32 u32OutputPin, u32 u32FrequencyToSetOutputTo)
 {
   u16 u16NumberOfClockCyclesBetweenToggles = (OUTPUT_PIN_CLOCK_FREQUENCY/u32FrequencyToSetOutputTo)/2;
+  if(u32FrequencyToSetOutputTo == 38000)
+  {
+    u16NumberOfClockCyclesBetweenToggles = 0x005;
+  }
   TimerSet(TIMER_CHANNEL1, u16NumberOfClockCyclesBetweenToggles);
   if(u32OutputPin == UPOMI_PIN)
   {
