@@ -70,7 +70,7 @@ void OutputPinInitialize(void)
   OutputPin_pfnStateMachine = OutputPinSM_Idle;
   G_u32ApplicationFlags |= _APPLICATION_FLAGS_OUTPUT_PINS;
   DebugPrintf("Output pin task ready\n\r");
-}
+} /* end OutputPinInitialize */
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: TurnOutputPinToVoltageHigh(u32 u32OutputPin)
@@ -204,11 +204,9 @@ u32 GetOutputPinBitLocation(u8 u8Pin, OutputPinPortType opptPort)
       /* Return the output pin position if the index is the correct port */
       return(OutputPin_au32OutputPins[u8Pin]);
     }
-  }
-  
+  }  
   /* Otherwise return 0 */
-  return(0);
-  
+  return(0);  
 }
 
 /**********************************************************************************************************************

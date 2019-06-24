@@ -15,8 +15,9 @@ PUBLIC FUNCTIONS
 - NONE
 
 PROTECTED FUNCTIONS
-- void ANTSChannelInitialize(void)
-- void ANTSChannelRunActiveState(void)
+- void ANTSChannelInitialize(void);
+- void ANTSChannelRunActiveState(void);
+- void ANTSChannelSetAntFrequency(u8 newFrequency);
 
 
 **********************************************************************************************************************/
@@ -66,15 +67,15 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: ANTSChannelInitialize()
 
-Description:
+Description: Gives the ant slave channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - The Ant channel will be given the initial values specified in ant_s_channel.h
 
 */
 void ANTSChannelInitialize(void)
@@ -115,15 +116,15 @@ void ANTSChannelInitialize(void)
 
   
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: ANTSChannelRunActiveState()
 
-Description:
+Description: Runs whichever state the ANTSChannel_pfStateMachine is currently assigned to
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - Runs whichever state the ANTSChannel_pfStateMachine is currently assigned to
 
 */
 void ANTSChannelRunActiveState(void)
@@ -132,10 +133,22 @@ void ANTSChannelRunActiveState(void)
 
 } /* end ANTSChannelRunActiveState */
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function: ANTSChannelSetAntFrequency(u8 newFrequency)
+
+Description: sets the frequency of the slave ant channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
+
+Requires:
+  - The channel is not configured/open
+
+Promises:
+  - changes the frequency of the channel
+
+*/
 void ANTSChannelSetAntFrequency(u8 newFrequency)
 {
   ANTSChannel_sChannelInfo.AntFrequency = newFrequency;
-}
+} /* end ANTSChannelSetAntFrequency */
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
@@ -145,7 +158,7 @@ void ANTSChannelSetAntFrequency(u8 newFrequency)
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* If the state machine got here, the channel should be configured and open. The slave channel recieves messages and saves them in G_au8ANTSChannelMessageRecieved */
 static void ANTSChannelSM_Idle(void)
 {
   static u8 au8DebugMessage[] = "Slave channel has recieved the message: 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00";
@@ -180,8 +193,8 @@ static void ANTSChannelSM_Error(void)
 } /* end ANTSChannelSM_Error() */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
-static void ANTSChannelSM_WaitForButtonPressForConfiguation(void)
+/* In this state, the channel is waiting for BUTTON2 to be pressed before it configures the channel. This is the state we begin in after initialization */
+static void ANTSChannelSM_WaitForButtonPressForConfiguration(void)
 {
   if(WasButtonPressed(BUTTON2))
   {
@@ -192,10 +205,10 @@ static void ANTSChannelSM_WaitForButtonPressForConfiguation(void)
     ANTSChannel_pfStateMachine = ANTSChannelSM_WaitForConfiguration;
     ANTSChannel_u32Timeout = G_u32SystemTime1ms;
   }
-}
+} /* end ANTSChannelSM_WaitForButtonPressForConfiguration */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for ant to be done configuring, this state is supposed to come after ANTSChannelSM_WaitForButtonPressForConfiguration */
 static void ANTSChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_CONFIGURED)
@@ -211,10 +224,10 @@ static void ANTSChannelSM_WaitForConfiguration(void)
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_Error;
   }
-}
+} /* end ANTSChannelSM_WaitForConfiguration */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for a button press so that we can open the channel. This state is supposed to come after ANTSChannelSM_WaitForConfiguration */
 static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void)
 {
   if(WasButtonPressed(BUTTON2))
@@ -226,10 +239,10 @@ static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void)
     AntOpenChannelNumber(ANT_CHANNEL_SCHANNEL);
     ANTSChannel_u32Timeout = G_u32SystemTime1ms;
   }
-}
+} /* end ANTSChannelSM_WaitForButtonPressToOpenChannel */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for ant to be done opening the channel, this state is supposed to come after ANTMChannelSM_WaitForButtonPressToOpenChannel */
 static void ANTSChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_OPEN)
@@ -253,7 +266,7 @@ static void ANTSChannelSM_WaitChannelOpen(void)
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_Error;
   }
-}
+} /* end ANTSChannelSM_WaitChannelOpen */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */

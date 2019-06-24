@@ -20,6 +20,7 @@ PROTECTED FUNCTIONS
 - u8 AntCommand_MessageToAntCommand(u8 au8Message[])
 - u8* AntCommand_GetBeginTimerAntMessage()
 - u8* AntCommand_GetEndTimerAntMessage()
+- u8* AntCommand_GetIdleAntMessage()
 
 
 **********************************************************************************************************************/
@@ -39,15 +40,15 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: AntCommand_MessageToAntCommand(u8 au8Message[])
 
-Description:
+Description: Takes in an ANT message, interprets what the message means, and returns an AntCommandType that tells the calling function what the message means
 
 Requires:
-  - 
+  - au8Message is an array of length ANT_MESSAGE_LENGTH_BYTES
 
 Promises:
-  - 
+  - returns what ant_commands thinks the ANT message means in the form of an AntCommandType
 
 */
 AntCommandType AntCommand_MessageToAntCommand(u8 au8Message[])
@@ -76,18 +77,18 @@ AntCommandType AntCommand_MessageToAntCommand(u8 au8Message[])
     return ANT_COMMAND_END_TIMER;
   }
   return ANT_COMMAND_INVALID;
-}
+} /* end AntCommand_MessageToAntCommand */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: AntCommand_GetBeginTimerAntMessage
 
-Description:
+Description: returns a message that should be sent if a board wants to tell the other boards to start their timers
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - returns a message that should be sent if a board wants to tell the other boards to start their timers
 
 */
 u8* AntCommand_GetBeginTimerAntMessage()
@@ -97,15 +98,15 @@ u8* AntCommand_GetBeginTimerAntMessage()
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: AntCommand_GetEndTimerAntMessage
 
-Description:
+Description: returns a message that should be sent if a board wants to tell the other boards to end their timers
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - returns a message that should be sent if a board wants to tell the other boards to end their timers
 
 */
 u8* AntCommand_GetEndTimerAntMessage()
@@ -115,15 +116,15 @@ u8* AntCommand_GetEndTimerAntMessage()
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: AntCommand_GetIdleAntMessage
 
-Description:
+Description: returns a message that should be sent if a board has nothing to say right now
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - returns a message that should be sent if a board has nothing to say right now
 
 */
 u8* AntCommand_GetIdleAntMessage()

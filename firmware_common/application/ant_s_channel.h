@@ -36,7 +36,7 @@ State Machine Declarations
 ***********************************************************************************************************************/
 static void ANTSChannelSM_Idle(void);    
 static void ANTSChannelSM_Error(void);         
-static void ANTSChannelSM_WaitForButtonPressForConfiguation(void);
+static void ANTSChannelSM_WaitForButtonPressForConfiguration(void);
 static void ANTSChannelSM_WaitForConfiguration(void);
 static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void);
 static void ANTSChannelSM_WaitChannelOpen(void);

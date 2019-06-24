@@ -15,9 +15,9 @@ PUBLIC FUNCTIONS
 - NONE
 
 PROTECTED FUNCTIONS
-- void ANTMChannelInitialize(void)
-- void ANTMChannelRunActiveState(void)
-
+- void ANTMChannelInitialize(void);
+- void ANTMChannelRunActiveState(void);
+- void ANTMChannelSetAntFrequency(u8 newFrequency);
 
 **********************************************************************************************************************/
 
@@ -66,15 +66,15 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: ANTMChannelInitialize()
 
-Description:
+Description: Gives the ant master channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - The Ant channel will be given the initial values specified in ant_m_channel.h
 
 */
 void ANTMChannelInitialize(void)
@@ -114,15 +114,15 @@ void ANTMChannelInitialize(void)
 } /* end ANTMChannelInitialize() */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: ANTMChannelSetAntFrequency(u8 newFrequency)
 
-Description:
+Description: sets the frequency of the master ant channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
 
 Requires:
-  - 
+  - The channel is not configured/open
 
 Promises:
-  - 
+  - changes the frequency of the channel
 
 */
 void ANTMChannelSetAntFrequency(u8 newFrequency)
@@ -131,15 +131,15 @@ void ANTMChannelSetAntFrequency(u8 newFrequency)
 }
   
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: ANTMChannelRunActiveState()
 
-Description:
+Description: Runs whichever state the ANTMChannel_pfStateMachine is currently assigned to
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - Runs whichever state the ANTMChannel_pfStateMachine is currently assigned to
 
 */
 void ANTMChannelRunActiveState(void)
@@ -157,7 +157,7 @@ void ANTMChannelRunActiveState(void)
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In the idle state, the channel is configured and opened so the master channel will send whatever message is contained in G_au8ANTMChannelMessageToSend */
 static void ANTMChannelSM_Idle(void)
 {
   static u8 au8Message[8] = {0,0,0,0,0,0,0,0};
@@ -191,8 +191,8 @@ static void ANTMChannelSM_Error(void)
 } /* end ANTMChannelSM_Error() */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
-static void ANTMChannelSM_WaitForButtonPressForConfiguation(void)
+/* In this state, the channel is waiting for BUTTON1 to be pressed before it configures the channel. This is the state we begin in after initialization */
+static void ANTMChannelSM_WaitForButtonPressForConfiguration(void)
 {
   if(WasButtonPressed(BUTTON1))
   {
@@ -203,10 +203,10 @@ static void ANTMChannelSM_WaitForButtonPressForConfiguation(void)
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForConfiguration;
     ANTMChannel_u32Timeout = G_u32SystemTime1ms;
   }
-}
+} /* emd ANTMChannelSM_WaitForButtonPressForConfiguration
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for ant to be done configuring, this state is supposed to come after ANTMChannelSM_WaitForButtonPressForConfiguration */
 static void ANTMChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_CONFIGURED)
@@ -222,10 +222,10 @@ static void ANTMChannelSM_WaitForConfiguration(void)
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_Error;
   }
-}
+} /* end ANTMChannelSM_WaitForConfiguration */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for a button press so that we can open the channel. This state is supposed to come after ANTMChannelSM_WaitForConfiguration */
 static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
 {
   if(WasButtonPressed(BUTTON1))
@@ -237,10 +237,10 @@ static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
     AntOpenChannelNumber(ANT_CHANNEL_MCHANNEL);
     ANTMChannel_u32Timeout = G_u32SystemTime1ms;
   }
-}
+} /* end ANTMChannelSM_WaitForButtonPressToOpenChannel */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state, the state machine is waiting for ant to be done opening the channel, this state is supposed to come after ANTMChannelSM_WaitForButtonPressToOpenChannel */
 static void ANTMChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_OPEN)
@@ -264,7 +264,7 @@ static void ANTMChannelSM_WaitChannelOpen(void)
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_Error;
   }
-}
+} /* end ANTMChannelSM_WaitChannelOpen */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */

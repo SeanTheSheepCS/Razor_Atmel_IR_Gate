@@ -108,7 +108,7 @@ void InputPinInitialize(void)
   InputPin_pfnStateMachine = InputPinSM_Idle;
   G_u32ApplicationFlags |= _APPLICATION_FLAGS_INPUT_PINS;
   DebugPrintf("Input pin task ready\n\r");
-}
+} /*end InputPinInitialize() */
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: IsPinActive(u32 u32InputPin)
@@ -136,7 +136,7 @@ bool IsPinActive(u32 u32InputPin)
   {
     return FALSE;
   }
-}
+} /* end IsPinActive */
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: HasThePinBeenActivated(u32 u32InputPin)
@@ -154,7 +154,7 @@ Promises:
 bool HasThePinBeenActivated(u32 u32InputPin)
 {
   return InputPin_abNewActive[u32InputPin];
-}
+} /* end HasThePinBeenActivated */
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: PinActiveAcknowledge(u32 u32InputPin)
@@ -220,7 +220,7 @@ u32 GetInputPinBitLocation(u8 u8Pin, InputPinPortType ipptPort)
   /* Otherwise return 0 */
   return(0);
   
-}
+} /* end GetInputPinBitLocation */
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -237,7 +237,7 @@ void InputPinSM_Idle(void)
       InputPin_pfnStateMachine = InputPinSM_PinActive;
     }
   }
-}
+} /* end InputPinSM_Idle */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Watch the input pins to decide if the voltage change that brought you here should be recorded as activity at the pin */
@@ -296,4 +296,4 @@ void InputPinSM_PinActive(void)
       } /* end if( IsTimeUp...) */
     } /* end if(G_abInputPinDebounceActive[index]) */
   } /* end for i */
-}
+} /* end InputPinSM_PinActive */

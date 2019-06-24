@@ -1,6 +1,6 @@
 /*!*********************************************************************************************************************
-@file ANTMChannel.h                                                                
-@brief Header file for ANTMChannel
+@file ant_m_channel.h                                                                
+@brief Header file for ant_m_channel.c
 **********************************************************************************************************************/
 
 #ifndef __ANTMCHANNEL_H
@@ -36,7 +36,7 @@ State Machine Declarations
 ***********************************************************************************************************************/
 static void ANTMChannelSM_Idle(void);    
 static void ANTMChannelSM_Error(void); 
-static void ANTMChannelSM_WaitForButtonPressForConfiguation(void);
+static void ANTMChannelSM_WaitForButtonPressForConfiguration(void);
 static void ANTMChannelSM_WaitForConfiguration(void);
 static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void);
 static void ANTMChannelSM_WaitChannelOpen(void);
