@@ -50,10 +50,12 @@ Variable names shall start with "IrGate_<type>" and be declared as static.
 static fnCode_type IrGate_pfStateMachine;               /*!< @brief The state machine function pointer */
 static u32 IrGate_u32Timeout;                           /*!< @brief Timeout counter used across states */
 static u8* IrGate_au8ReadyMessageWithTeam = "Ready For RED Team!";
-static Team IrGate_tTeam = RED_TEAM;
+static TeamType IrGate_tTeam = RED_TEAM;
 static u8 IrGate_au8TimeDisplay[] = "Time: 00:00.000";
 static u8* IrGate_au8ModeDisplay = "Mode: START";
-static GateMode IrGate_gmCurrentMode = GATE_MODE_START;
+static GateModeType IrGate_gmCurrentMode = GATE_MODE_START;
+static IRTransmittingOrRecievingModeType IrGate_trmtIRCurrentTransmittingOrRecievingMode = IR_MODE_RECIEVE_ONLY;
+static u8* IrGate_au8TransmitModeDisplay = "R-";
 
 /**********************************************************************************************************************
 Function Definitions
@@ -87,7 +89,7 @@ void IrGateInitialize(void)
   LCDCommand(LCD_CLEAR_CMD);
   LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
   LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
-  TurnOutputPinToTheFollowingFrequency(UPOMI_PIN, 38000);
+  LCDMessage(LINE2_START_ADDR + 18, IrGate_au8TransmitModeDisplay);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -245,6 +247,23 @@ void CycleTeam()
   LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
 }
 
+void CycleTransmitOrRecieveMode(void)
+{
+  if(IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_RECIEVE_ONLY)
+  {
+    IrGate_au8TransmitModeDisplay = "-T";
+    TurnOutputPinToThirtyEightThousandHertz(OUTPUT_PIN_UPOMI);
+    IrGate_trmtIRCurrentTransmittingOrRecievingMode = IR_MODE_TRANSMIT_ONLY;
+  }
+  else if (IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_TRANSMIT_ONLY)
+  {
+    IrGate_au8TransmitModeDisplay = "R-";
+    TurnOutputPinToVoltageLow(OUTPUT_PIN_UPOMI);
+    IrGate_trmtIRCurrentTransmittingOrRecievingMode = IR_MODE_RECIEVE_ONLY;
+  }
+  LCDMessage(LINE2_START_ADDR + 18, IrGate_au8TransmitModeDisplay);
+}
+
 void SetAntMessageToSend(u8* au8MessageToBeSent)
 {
   for(int i = 0; i < ANT_MESSAGE_LENGTH_BYTES; i++)
@@ -269,25 +288,43 @@ State Machine Function Definitions
 static void IrGateSM_Idle(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+  static bool newButtonHold = TRUE;
   CopyRecievedAntMessageIntoArgument(&(au8RecievedMessage[0]));
+  
   if(WasButtonPressed(BUTTON0))
   {
     ButtonAcknowledge(BUTTON0);
     CycleTeam();
   }
+  
   if(WasButtonPressed(BUTTON3))
   {
     ButtonAcknowledge(BUTTON3);
     CycleMode();
   }
-  else if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_START)
+  
+  if(IsButtonHeld(BUTTON0,2000))
+  {
+    if(newButtonHold == TRUE)
+    {
+      CycleTransmitOrRecieveMode();
+      newButtonHold = FALSE;
+    }
+  }
+  else
+  {
+    newButtonHold = TRUE;
+  }
+  
+  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_START && IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_RECIEVE_ONLY)
   {
     PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerActive;
     LCDClearChars(LINE2_START_ADDR, 20);
     SetAntMessageToSend(AntCommand_GetBeginTimerAntMessage());
   }
-  else if((AntCommand_MessageToAntCommand(au8RecievedMessage) == ANT_COMMAND_BEGIN_TIMER) && (IrGate_gmCurrentMode != GATE_MODE_START))
+  
+  if((AntCommand_MessageToAntCommand(au8RecievedMessage) == ANT_COMMAND_BEGIN_TIMER))
   {
     IrGate_pfStateMachine = IrGateSM_TimerActive;
     LCDClearChars(LINE2_START_ADDR, 20);
@@ -300,7 +337,7 @@ static void IrGateSM_TimerActive(void)
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
   CopyRecievedAntMessageIntoArgument(&(au8RecievedMessage[0]));
   IrGateIncrementTimer();
-  if(G_u32SystemTime1ms % 19 == 0)
+  if(G_u32SystemTime1ms % 29 == 0)
   {
     IrGateDisplayTimer();
   }
@@ -308,12 +345,8 @@ static void IrGateSM_TimerActive(void)
   if(WasButtonPressed(BUTTON0))
   {
     ButtonAcknowledge(BUTTON0);
-    LCDClearChars(LINE1_START_ADDR, 20);
-    LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
-    LCDClearChars(LINE2_START_ADDR, 20);
-    LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
     IrGateResetTimer();
-    IrGate_pfStateMachine = IrGateSM_Idle;
+    IrGate_pfStateMachine = IrGateSM_TimerFrozen;
   }
   if((AntCommand_MessageToAntCommand(au8RecievedMessage) == ANT_COMMAND_END_TIMER))
   {
@@ -321,14 +354,14 @@ static void IrGateSM_TimerActive(void)
     SetAntMessageToSend(AntCommand_GetEndTimerAntMessage());
     IrGate_u32Timeout = G_u32SystemTime1ms;
   }
-  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_INTERMEDIATE)
+  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_INTERMEDIATE && IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_RECIEVE_ONLY)
   {
     PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerFrozen;
     SetAntMessageToSend(AntCommand_GetIdleAntMessage());
     IrGate_u32Timeout = G_u32SystemTime1ms;
   }
-  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_FINISH)
+  if(HasThePinBeenActivated(INPUT_PIN_UPIMO) && IrGate_gmCurrentMode == GATE_MODE_FINISH  && IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_RECIEVE_ONLY)
   {
     PinActiveAcknowledge(INPUT_PIN_UPIMO);
     IrGate_pfStateMachine = IrGateSM_TimerFrozen;
@@ -361,6 +394,7 @@ static void IrGateSM_ReadyForNextTimerReset(void)
     LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
     LCDClearChars(LINE2_START_ADDR, 20);
     LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
+    LCDMessage(LINE2_START_ADDR + 18, IrGate_au8TransmitModeDisplay);
     IrGateResetTimer();
     IrGate_pfStateMachine = IrGateSM_Idle;
   }

@@ -11,7 +11,7 @@ Type Definitions
 ***********************************************************************************************************************/
 
 typedef enum {OUTPUT_PIN_VOLTAGE_LOW = 0, OUTPUT_PIN_VOLTAGE_HIGH = 1} OutputPinStateType; 
-typedef enum {UPOMI_PIN = 0} OutputPinNameType;
+typedef enum {OUTPUT_PIN_UPOMI = 0} OutputPinNameType;
 typedef enum {OUTPUT_PIN_PORTA = 0, OUTPUT_PIN_PORTB = 0x80} OutputPinPortType;
 
 typedef struct
@@ -30,8 +30,6 @@ Constants / Definitions
 #define OUTPUT_PINS_IN_USE 1
 
 #define OUTPUT_PIN_CLOCK_FREQUENCY          (u32)120000000
-  
-#define UPOMI_PIN 0
 
 /***********************************************************************************************************************
 Function Declarations
@@ -42,7 +40,7 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TurnOutputPinToVoltageHigh(u32 u32OutputPin);
 void TurnOutputPinToVoltageLow(u32 u32OutputPin);
-void TurnOutputPinToTheFollowingFrequency(u32 u32OutputPin, u32 u32FrequencyToSetOutputTo);
+void TurnOutputPinToThirtyEightThousandHertz(u32 u32OutputPin);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
@@ -51,6 +49,7 @@ void OutputPinInitialize(void);
 void OutputPinRunActiveState(void);
 u32 GetOutputPinBitLocation(u8 u8Pin_, ButtonPortType ePort_);
 void UPOMIPinToggler(void);
+void SCLPinToggler(void);
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            

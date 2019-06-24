@@ -10,8 +10,9 @@
 Type Definitions
 **********************************************************************************************************************/
 
-typedef enum {GATE_MODE_START, GATE_MODE_FINISH, GATE_MODE_INTERMEDIATE} GateMode; 
-typedef enum {RED_TEAM, BLUE_TEAM} Team;
+typedef enum {GATE_MODE_START, GATE_MODE_FINISH, GATE_MODE_INTERMEDIATE} GateModeType; 
+typedef enum {RED_TEAM, BLUE_TEAM} TeamType;
+typedef enum {IR_MODE_TRANSMIT_ONLY, IR_MODE_RECIEVE_ONLY} IRTransmittingOrRecievingModeType;
 
 /**********************************************************************************************************************
 Function Declarations
@@ -37,6 +38,7 @@ void IrGateDisplayTimer(void);
 /*--------------------------------------------------------------------------------------------------------------------*/
 void CycleMode(void);
 void CycleTeam(void);
+void CycleTransmitOrRecieveMode(void);
 void SetAntMessageToSend(u8* au8MessageToBeSent);
 void CopyRecievedAntMessageIntoArgument(u8* au8WhereTheAntMessageShouldGo);
 

@@ -19,39 +19,40 @@ Variable names shall start with "OutputPin_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type OutputPin_pfnStateMachine;                  /*!< @brief The pin application state machine function pointer */
 
-/*!*********** %BUTTON% EDIT BOARD-SPECIFIC GPIO DEFINITIONS BELOW ***************/
-/* Add all of the GPIO pin names for the buttons in the system.  
+/*!*********** %OUTPUT_PINS% EDIT BOARD-SPECIFIC GPIO DEFINITIONS BELOW ***************/
+/* Add all of the GPIO pin names for the output pins in the system.  
 The order of the definitions below must match the order of the definitions provided in configuration.h */ 
 
 static const u32 OutputPin_au32OutputPins[OUTPUT_PINS_IN_USE] = {PA_12_BLADE_UPOMI};
 static OutputPinConfigType OutputPins_asArray[OUTPUT_PINS_IN_USE] = 
-{{OUTPUT_PIN_VOLTAGE_HIGH, OUTPUT_PIN_PORTA}, /* UPOMI  */
+{
+  {OUTPUT_PIN_VOLTAGE_HIGH, OUTPUT_PIN_PORTA} /* UPOMI  */
 };   
 
 void OutputPinInitialize(void)
 {
-  u32 u32PortAInterruptMask = 0;
-  u32 u32PortBInterruptMask = 0;
+  u32 u32PortAOutputPinBitsMask = 0;
+  u32 u32PortBOutputPinBitsMask = 0;
   
-  /* Create masks based on any buttons in the system.  It's ok to have an empty mask. */
+  /* Create masks based on any output pins in the system.  It's ok to have an empty mask. */
   for(u8 i = 0; i < OUTPUT_PINS_IN_USE; i++)
   {
     if(OutputPins_asArray[i].ePort == OUTPUT_PIN_PORTA)
     {
-      u32PortAInterruptMask |= OutputPin_au32OutputPins[i];
+      u32PortAOutputPinBitsMask |= OutputPin_au32OutputPins[i];
     }
     else if(OutputPins_asArray[i].ePort == OUTPUT_PIN_PORTB)
     {
-      u32PortBInterruptMask |= OutputPin_au32OutputPins[i];
+      u32PortBOutputPinBitsMask |= OutputPin_au32OutputPins[i];
     }
   }
   
-  /* Disables control on these pins */
-  AT91C_BASE_PIOA->PIO_PDR = u32PortAInterruptMask;
-  AT91C_BASE_PIOB->PIO_PDR = u32PortBInterruptMask;
+  /* Enables control on these pins */
+  AT91C_BASE_PIOA->PIO_PER = u32PortAOutputPinBitsMask;
+  AT91C_BASE_PIOB->PIO_PER = u32PortBOutputPinBitsMask;
   /* Makes these pins outputs only */
-  AT91C_BASE_PIOA->PIO_OER = u32PortAInterruptMask;
-  AT91C_BASE_PIOB->PIO_OER = u32PortBInterruptMask;
+  AT91C_BASE_PIOA->PIO_OER = u32PortAOutputPinBitsMask;
+  AT91C_BASE_PIOB->PIO_OER = u32PortBOutputPinBitsMask;
   
   OutputPin_pfnStateMachine = OutputPinSM_Idle;
   G_u32ApplicationFlags |= _APPLICATION_FLAGS_OUTPUT_PINS;
@@ -60,18 +61,15 @@ void OutputPinInitialize(void)
 
 void TurnOutputPinToVoltageHigh(u32 u32OutputPin)
 {
+  TimerStop(TIMER_CHANNEL1); // <<<<<<<<<< I am important! Do not remove me! >>>>>>>>>>>> If the Pin is turned to a certain frequency, it will be done with channel 1, so this line stops all IR transmitting.
   AT91C_BASE_PIOA->PIO_SODR = OutputPin_au32OutputPins[u32OutputPin];
 }
   
-void TurnOutputPinToTheFollowingFrequency(u32 u32OutputPin, u32 u32FrequencyToSetOutputTo)
+void TurnOutputPinToThirtyEightThousandHertz(u32 u32OutputPin)
 {
-  u16 u16NumberOfClockCyclesBetweenToggles = (OUTPUT_PIN_CLOCK_FREQUENCY/u32FrequencyToSetOutputTo)/2;
-  if(u32FrequencyToSetOutputTo == 38000)
-  {
-    u16NumberOfClockCyclesBetweenToggles = 0x005;
-  }
+  u16 u16NumberOfClockCyclesBetweenToggles = 0x0005;
   TimerSet(TIMER_CHANNEL1, u16NumberOfClockCyclesBetweenToggles);
-  if(u32OutputPin == UPOMI_PIN)
+  if(u32OutputPin == OUTPUT_PIN_UPOMI)
   {
     TimerAssignCallback(TIMER_CHANNEL1, UPOMIPinToggler);
   }
@@ -83,18 +81,19 @@ void UPOMIPinToggler(void)
   static bool bIsInputHigh = TRUE;
   if(bIsInputHigh)
   {
-    TurnOutputPinToVoltageLow(UPOMI_PIN);
+    AT91C_BASE_PIOA->PIO_CODR = PA_12_BLADE_UPOMI;
     bIsInputHigh = FALSE;
   }
   else
   {
-    TurnOutputPinToVoltageHigh(UPOMI_PIN);
+    AT91C_BASE_PIOA->PIO_SODR = PA_12_BLADE_UPOMI;
     bIsInputHigh = TRUE;
   }
 }
 
 void TurnOutputPinToVoltageLow(u32 u32OutputPin)
 {
+  TimerStop(TIMER_CHANNEL1); // <<<<<<<<<< I am important! Do not remove me! >>>>>>>>>>>> If the Pin is turned to a certain frequency, it will be done with channel 1, so this line stops all IR transmitting.
   AT91C_BASE_PIOA->PIO_CODR = OutputPin_au32OutputPins[u32OutputPin];
 }
 
