@@ -17,8 +17,12 @@ PUBLIC FUNCTIONS
 - NONE
 
 PROTECTED FUNCTIONS
-- void IrGateInitialize(void)
-- void IrGateRunActiveState(void)
+- void IrGateInitialize(void);
+- void IrGateRunActiveState(void);
+
+- void IrGateResetTimer(void);
+- void IrGateIncrementTimer(void);
+- void IrGateDisplayTimer(void);
 
 
 **********************************************************************************************************************/
@@ -49,6 +53,15 @@ Variable names shall start with "IrGate_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type IrGate_pfStateMachine;               /*!< @brief The state machine function pointer */
 static u32 IrGate_u32Timeout;                           /*!< @brief Timeout counter used across states */
+
+
+// When working properly, the screen should look like this:
+//
+// Ready For RED Team!
+// Mode: START         R-
+//
+
+//These are just initial values to these variables, you can find more information about what they mean in ir_gate_app.h
 static u8* IrGate_au8ReadyMessageWithTeam = "Ready For RED Team!";
 static TeamType IrGate_tTeam = RED_TEAM;
 static u8 IrGate_au8TimeDisplay[] = "Time: 00:00.000";
@@ -70,15 +83,18 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: IrGateInitialize
 
-Description:
+Description: Displays the initial message on the screen and sets the state to idle
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - displays this message:
+                Ready For RED Team!
+                Mode: START         R-
+  - sets the state to idle
 
 */
 void IrGateInitialize(void)
@@ -102,15 +118,15 @@ void IrGateInitialize(void)
 
   
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: IrGateRunActiveState
 
-Description:
+Description: runs whatever function IrGate_pfStateMachine is pointing to
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - runs whatever function IrGate_pfStateMachine is pointing to
 
 */
 void IrGateRunActiveState(void)
@@ -120,15 +136,15 @@ void IrGateRunActiveState(void)
 } /* end IrGateRunActiveState */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: IrGateIncrementTimer
 
-Description:
+Description: Increments the timer, does not display it
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - Increments the timer, does not display it
 
 */
 static void IrGateIncrementTimer()
@@ -191,33 +207,33 @@ static void IrGateIncrementTimer()
 } /* end IrGateIncrementTimer */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: IrGateDisplayTimer()
 
-Description:
+Description: Displays the timer on the first line of the screen
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - Displays the timer on the first line of the screen
 
 */
 static void IrGateDisplayTimer()
 {
   LCDClearChars(LINE1_START_ADDR, 20);
   LCDMessage(LINE1_START_ADDR, IrGate_au8TimeDisplay);
-}
+} /* end IrGateDisplayTimer */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: IrGateResetTimer()
 
-Description:
+Description: Sets IrGate_au8TimeDisplay to displaying all zeroes
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - Sets IrGate_au8TimeDisplay to displaying all zeroes
 
 */
 static void IrGateResetTimer()
@@ -229,7 +245,7 @@ static void IrGateResetTimer()
   IrGate_au8TimeDisplay[9]  = '0';
   IrGate_au8TimeDisplay[7]  = '0';
   IrGate_au8TimeDisplay[6]  = '0';
-}
+} /* end IrGateResetTimer */
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
@@ -237,15 +253,18 @@ static void IrGateResetTimer()
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: CycleMode()
 
-Description:
+Description: Changes the mode you are in (more information on the modes can be found in:     extra_information/the_different_modes)
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - If you are in START mode, you are placed in INTERMEDIATE mode
+  - If you are in INTERMEDIATE mode, you are placed in FINISH mode
+  - If you are in FINISH mode, you are placed in START mode
+  - Changes the message on the display accordingly
 
 */
 void CycleMode()
@@ -267,18 +286,20 @@ void CycleMode()
   }
   LCDClearChars(LINE2_START_ADDR, 18);
   LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
-}
+} /* end CycleMode */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
-
-Description:
+Function: CycleTeam()
+ 
+Description: Changes the team you are on (more information on the teams can be found in:     extra_information/team_frequencies)
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - If you were on red team, you are now on blue team
+  - If you were on blue team, you are now on red team
+  - Changes the message on the display as well as the frequency of the channels to match your new team
 
 */
 void CycleTeam()
@@ -299,18 +320,20 @@ void CycleTeam()
   }
   LCDClearChars(LINE1_START_ADDR, 20);
   LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
-}
+} /* end CycleTeam */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: CycleTransmitOrRecieveMode()
 
-Description:
+Description: Changes whether this board should transmit IR waves or recieve IR waves
 
 Requires:
-  - 
+  - N/A
 
 Promises:
-  - 
+  - If you were in recieve mode, you are now in transmit mode
+  - If you were in transmit mode, you are now in recieve mode
+  - Updates the display accordingly
 
 */
 void CycleTransmitOrRecieveMode(void)
@@ -328,18 +351,18 @@ void CycleTransmitOrRecieveMode(void)
     IrGate_trmtIRCurrentTransmittingOrRecievingMode = IR_MODE_RECIEVE_ONLY;
   }
   LCDMessage(LINE2_START_ADDR + 18, IrGate_au8TransmitModeDisplay);
-}
+} /* end CycleTransmitOrRecieveMode */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: SetAntMessageToSend(u8* au8MessageToBeSent)
 
-Description:
+Description: Changes what message ant_m_channel will be sending from here onwards
 
 Requires:
-  - 
+  - au8MessageToBeSent is an array of length ANT_MESSAGE_LENGTH_BYTES containing an ANT message
 
 Promises:
-  - 
+  - ant_m_channel will now be sending this message
 
 */
 void SetAntMessageToSend(u8* au8MessageToBeSent)
@@ -348,18 +371,18 @@ void SetAntMessageToSend(u8* au8MessageToBeSent)
   {
     G_au8ANTMChannelMessageToSend[i] = au8MessageToBeSent[i];
   }
-}
+} /* end SetAntMessageToSend */
 
 /*----------------------------------------------------------------------------------------------------------------------
-Function:
+Function: CopyRecieverAntMessageIntoArgument(u8* au8WhereTheAntMessageShouldGo)
 
-Description:
+Description: Copies the ant message ant_s_channel recieved into the argument you pass in
 
 Requires:
-  - 
+  - u8* au8WhereTheAntMessageShouldGo is a pointer to the first element of an array of length ANT_MESSAGE_LENGTH_BYTES where G_au8ANTSChannelMessageRecieved should be copied
 
 Promises:
-  - 
+  - copies G_au8ANTSChannelMessageRecieved into au8WhereTheAntMessageShouldGo
 
 */
 void CopyRecievedAntMessageIntoArgument(u8* au8WhereTheAntMessageShouldGo)
@@ -368,13 +391,21 @@ void CopyRecievedAntMessageIntoArgument(u8* au8WhereTheAntMessageShouldGo)
   {
     au8WhereTheAntMessageShouldGo[i] = G_au8ANTSChannelMessageRecieved[i];
   }
-}
+} /* end CopyRecievedAntMessageIntoArgument */
 
 /**********************************************************************************************************************
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* In this state... 
+ * 
+ * BUTTON0 PRESS - Change team
+ * BUTTON0 HOLD - Change transmit/recieve
+ * BUTTON1 PRESS - Used by ant_m_channel.c 
+ * BUTTON2 PRESS - Used by ant_s_channel.h
+ * BUTTON3 PRESS - Change what mode the gate is in
+ *Other behavoir depends on what mode the gate is in, please check     extra_information/the_different_modes.txt
+ */
 static void IrGateSM_Idle(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -423,7 +454,7 @@ static void IrGateSM_Idle(void)
 } /* end IRStartGateSM_Idle() */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* Increments the timer, stops if BUTTON0 is pressed, other behavoir depends on mode, please check extra_information/the_different_modes.txt */
 static void IrGateSM_TimerActive(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -463,7 +494,7 @@ static void IrGateSM_TimerActive(void)
 } /* end IrGateSM_TimerActive() */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* The timer has been stopped for one reason or another, we sit in this state for an allotted amount of time until we are ready to go again*/
 static void IrGateSM_TimerFrozen(void)
 {
   //Wait with the timer frozen for a specific amount of time to make sure that start timer signals do not accidentally trigger the timer to start again
@@ -474,10 +505,10 @@ static void IrGateSM_TimerFrozen(void)
     SetAntMessageToSend(AntCommand_GetIdleAntMessage());
     IrGate_pfStateMachine = IrGateSM_ReadyForNextTimerReset;
   }
-}
+} /* end IrGateSM_TimeFrozen */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* What does this state do? */
+/* We are ready to start again. We wait for a BUTTON0 press or a signal to start the timer before we can go again */
 static void IrGateSM_ReadyForNextTimerReset(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -501,7 +532,7 @@ static void IrGateSM_ReadyForNextTimerReset(void)
     LCDClearChars(LINE1_START_ADDR, 20);
     IrGate_pfStateMachine = IrGateSM_TimerActive;
   }
-}
+} /* IrGateSM_ReadyForNextTimerReset */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
