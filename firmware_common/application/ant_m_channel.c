@@ -65,19 +65,16 @@ Function Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*!--------------------------------------------------------------------------------------------------------------------
-@fn void ANTMChannelInitialize(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief
-Initializes the State Machine and its variables.
-
-Should only be called once in main init section.
+Description:
 
 Requires:
-- NONE
+  - 
 
 Promises:
-- NONE
+  - 
 
 */
 void ANTMChannelInitialize(void)
@@ -116,24 +113,33 @@ void ANTMChannelInitialize(void)
 
 } /* end ANTMChannelInitialize() */
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void ANTMChannelSetAntFrequency(u8 newFrequency)
 {
   ANTMChannel_sChannelInfo.AntFrequency = newFrequency;
 }
   
-/*!----------------------------------------------------------------------------------------------------------------------
-@fn void ANTMChannelRunActiveState(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief Selects and runs one iteration of the current state in the state machine.
-
-All state machines have a TOTAL of 1ms to execute, so on average n state machines
-may take 1ms / n to execute.
+Description:
 
 Requires:
-- State machine function pointer points at current state
+  - 
 
 Promises:
-- Calls the function to pointed by the state machine function pointer
+  - 
 
 */
 void ANTMChannelRunActiveState(void)
@@ -184,6 +190,8 @@ static void ANTMChannelSM_Error(void)
   
 } /* end ANTMChannelSM_Error() */
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTMChannelSM_WaitForButtonPressForConfiguation(void)
 {
   if(WasButtonPressed(BUTTON1))
@@ -197,6 +205,8 @@ static void ANTMChannelSM_WaitForButtonPressForConfiguation(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTMChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_CONFIGURED)
@@ -214,6 +224,8 @@ static void ANTMChannelSM_WaitForConfiguration(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
 {
   if(WasButtonPressed(BUTTON1))
@@ -227,6 +239,8 @@ static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTMChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_OPEN)

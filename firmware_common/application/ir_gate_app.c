@@ -69,19 +69,16 @@ Function Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*!--------------------------------------------------------------------------------------------------------------------
-@fn void IrGateInitialize(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief
-Initializes the State Machine and its variables.
-
-Should only be called once in main init section.
+Description:
 
 Requires:
-- NONE
+  - 
 
 Promises:
-- NONE
+  - 
 
 */
 void IrGateInitialize(void)
@@ -104,19 +101,16 @@ void IrGateInitialize(void)
 } /* end IrGateInitialize() */
 
   
-/*!----------------------------------------------------------------------------------------------------------------------
-@fn void IrGateRunActiveState(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief Selects and runs one iteration of the current state in the state machine.
-
-All state machines have a TOTAL of 1ms to execute, so on average n state machines
-may take 1ms / n to execute.
+Description:
 
 Requires:
-- State machine function pointer points at current state
+  - 
 
 Promises:
-- Calls the function to pointed by the state machine function pointer
+  - 
 
 */
 void IrGateRunActiveState(void)
@@ -125,6 +119,18 @@ void IrGateRunActiveState(void)
 
 } /* end IrGateRunActiveState */
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 static void IrGateIncrementTimer()
 {
   /* MILLISECOND MANAGER */
@@ -184,12 +190,36 @@ static void IrGateIncrementTimer()
   }
 } /* end IrGateIncrementTimer */
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 static void IrGateDisplayTimer()
 {
   LCDClearChars(LINE1_START_ADDR, 20);
   LCDMessage(LINE1_START_ADDR, IrGate_au8TimeDisplay);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 static void IrGateResetTimer()
 {
   IrGate_au8TimeDisplay[14] = '0';
@@ -206,6 +236,18 @@ static void IrGateResetTimer()
 /*! @privatesection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void CycleMode()
 {
   if(IrGate_gmCurrentMode == GATE_MODE_START)
@@ -227,6 +269,18 @@ void CycleMode()
   LCDMessage(LINE2_START_ADDR, IrGate_au8ModeDisplay);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void CycleTeam()
 {
   if(IrGate_tTeam == RED_TEAM)
@@ -247,6 +301,18 @@ void CycleTeam()
   LCDMessage(LINE1_START_ADDR, IrGate_au8ReadyMessageWithTeam);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void CycleTransmitOrRecieveMode(void)
 {
   if(IrGate_trmtIRCurrentTransmittingOrRecievingMode == IR_MODE_RECIEVE_ONLY)
@@ -264,6 +330,18 @@ void CycleTransmitOrRecieveMode(void)
   LCDMessage(LINE2_START_ADDR + 18, IrGate_au8TransmitModeDisplay);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void SetAntMessageToSend(u8* au8MessageToBeSent)
 {
   for(int i = 0; i < ANT_MESSAGE_LENGTH_BYTES; i++)
@@ -272,6 +350,18 @@ void SetAntMessageToSend(u8* au8MessageToBeSent)
   }
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 void CopyRecievedAntMessageIntoArgument(u8* au8WhereTheAntMessageShouldGo)
 {
   for(int i = 0; i < ANT_MESSAGE_LENGTH_BYTES; i++)
@@ -331,7 +421,9 @@ static void IrGateSM_Idle(void)
     SetAntMessageToSend(AntCommand_GetBeginTimerAntMessage());
   }
 } /* end IRStartGateSM_Idle() */
-     
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void IrGateSM_TimerActive(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -370,6 +462,8 @@ static void IrGateSM_TimerActive(void)
   }
 } /* end IrGateSM_TimerActive() */
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void IrGateSM_TimerFrozen(void)
 {
   //Wait with the timer frozen for a specific amount of time to make sure that start timer signals do not accidentally trigger the timer to start again
@@ -382,6 +476,8 @@ static void IrGateSM_TimerFrozen(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void IrGateSM_ReadyForNextTimerReset(void)
 {
   static u8 au8RecievedMessage[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};

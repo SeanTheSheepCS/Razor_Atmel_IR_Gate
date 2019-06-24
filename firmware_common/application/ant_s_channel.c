@@ -65,19 +65,16 @@ Function Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*!--------------------------------------------------------------------------------------------------------------------
-@fn void ANTSChannelInitialize(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief
-Initializes the State Machine and its variables.
-
-Should only be called once in main init section.
+Description:
 
 Requires:
-- NONE
+  - 
 
 Promises:
-- NONE
+  - 
 
 */
 void ANTSChannelInitialize(void)
@@ -117,19 +114,16 @@ void ANTSChannelInitialize(void)
 } /* end ANTSChannelInitialize() */
 
   
-/*!----------------------------------------------------------------------------------------------------------------------
-@fn void ANTSChannelRunActiveState(void)
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
 
-@brief Selects and runs one iteration of the current state in the state machine.
-
-All state machines have a TOTAL of 1ms to execute, so on average n state machines
-may take 1ms / n to execute.
+Description:
 
 Requires:
-- State machine function pointer points at current state
+  - 
 
 Promises:
-- Calls the function to pointed by the state machine function pointer
+  - 
 
 */
 void ANTSChannelRunActiveState(void)
@@ -185,6 +179,8 @@ static void ANTSChannelSM_Error(void)
   
 } /* end ANTSChannelSM_Error() */
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTSChannelSM_WaitForButtonPressForConfiguation(void)
 {
   if(WasButtonPressed(BUTTON2))
@@ -198,6 +194,8 @@ static void ANTSChannelSM_WaitForButtonPressForConfiguation(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTSChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_CONFIGURED)
@@ -215,6 +213,8 @@ static void ANTSChannelSM_WaitForConfiguration(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void)
 {
   if(WasButtonPressed(BUTTON2))
@@ -228,6 +228,8 @@ static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void)
   }
 }
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* What does this state do? */
 static void ANTSChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_OPEN)

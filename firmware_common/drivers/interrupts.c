@@ -253,7 +253,9 @@ void PIOB_IrqHandler(void)
 {
   u32 u32GPIOInterruptSources;
   u32 u32ButtonInterrupts;
+  u32 u32PinInterrupts;
   u32 u32CurrentButtonLocation;
+  u32 u32CurrentPinLocation;
 
   /* Grab a snapshot of the current PORTB status flags (clears all flags) */
   u32GPIOInterruptSources  = AT91C_BASE_PIOB->PIO_ISR;
@@ -283,6 +285,21 @@ void PIOB_IrqHandler(void)
       }
     }
   } /* end button interrupt checking */
+  
+  u32PinInterrupts = u32GPIOInterruptSources & GPIOB_INPUT_PINS;
+  if(u32PinInterrupts)
+  {
+    for(u8 i = 0; i < INPUT_PINS_IN_USE; i++)
+    {
+      u32CurrentPinLocation = GetInputPinBitLocation(i, INPUT_PIN_PORTB);
+      if(u32PinInterrupts & u32CurrentPinLocation)
+      {
+        AT91C_BASE_PIOB->PIO_IDR |= u32CurrentPinLocation;
+        G_abInputPinDebounceActive[i] = TRUE;
+        G_au32InputPinDebounceTimeStart[i] = G_u32SystemTime1ms;
+      }
+    }
+  }
 
   /* Clear the PIOB pending flag and exit */
   //NVIC->ICPR[0] = (1 << IRQn_PIOB);

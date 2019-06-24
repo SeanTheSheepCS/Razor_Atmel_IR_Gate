@@ -108,6 +108,13 @@ void main(void)
     IrGateRunActiveState();
     
     /* ANT message */
+    
+    // Q: WHY IS THE CODE LIKE THIS?
+    // A: Both channels call the AntReadAppMessageBuffer function in their idle state. The first one to call the function has it return true, the other one will return false.
+    //    The ant_m_channel only sends his message when AntReadAppMessageBuffer returns true and the ant_s_channel only updates what message he recieves when AntReadAppMessageBuffer returns true
+    //    These if statements make sure that sometimes ant_m_channel gets to send a message, and other times ant_s_channel gets to process a message
+    // Better solution (?) : store AntReadAppMessageBuffer's return value in some global variable and have both 
+    
     if(G_u32SystemTime1ms % 3 == 0 || G_u32SystemTime1ms % 3 == 1)
     {
       ANTSChannelRunActiveState();

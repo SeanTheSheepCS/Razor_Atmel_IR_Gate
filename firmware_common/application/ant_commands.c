@@ -38,6 +38,18 @@ Function Definitions
 /*! @protectedsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 AntCommandType AntCommand_MessageToAntCommand(u8 au8Message[])
 {
   static u8 au8BeginMessage[] = ANT_MESSAGE_BEGIN_TIMER;
@@ -66,18 +78,54 @@ AntCommandType AntCommand_MessageToAntCommand(u8 au8Message[])
   return ANT_COMMAND_INVALID;
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 u8* AntCommand_GetBeginTimerAntMessage()
 {
   static u8 u8pAddressOfBeginTimerMessage[] = ANT_MESSAGE_BEGIN_TIMER;
   return &(u8pAddressOfBeginTimerMessage[0]);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 u8* AntCommand_GetEndTimerAntMessage()
 {
   static u8 u8pAddressOfEndTimerMessage[] = ANT_MESSAGE_END_TIMER;
   return &(u8pAddressOfEndTimerMessage[0]);
 }
 
+/*----------------------------------------------------------------------------------------------------------------------
+Function:
+
+Description:
+
+Requires:
+  - 
+
+Promises:
+  - 
+
+*/
 u8* AntCommand_GetIdleAntMessage()
 {
   static u8 u8pAddressOfIdleMessage[] = ANT_MESSAGE_IDLE;
