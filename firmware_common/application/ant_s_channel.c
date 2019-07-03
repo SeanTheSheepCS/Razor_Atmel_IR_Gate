@@ -104,7 +104,7 @@ void ANTSChannelInitialize(void)
   /* If good initialization, set state to Idle */
   if(1)
   {
-    ANTSChannel_pfStateMachine = ANTSChannelSM_WaitForButtonPressForConfiguation;
+    ANTSChannel_pfStateMachine = ANTSChannelSM_WaitForButtonPressForConfiguration;
   }
   else
   {

@@ -65,6 +65,7 @@ static u32 IrGate_u32Timeout;                           /*!< @brief Timeout coun
 static u8* IrGate_au8ReadyMessageWithTeam = "Ready For RED Team!";
 static TeamType IrGate_tTeam = RED_TEAM;
 static u8 IrGate_au8TimeDisplay[] = "Time: 00:00.000";
+#define timeDisplay IrGate_au8TimeDisplay  //So that the campers will have a simpler name to use
 static u8* IrGate_au8ModeDisplay = "Mode: START";
 static GateModeType IrGate_gmCurrentMode = GATE_MODE_START;
 static IRTransmittingOrRecievingModeType IrGate_trmtIRCurrentTransmittingOrRecievingMode = IR_MODE_RECIEVE_ONLY;
@@ -149,61 +150,7 @@ Promises:
 */
 static void IrGateIncrementTimer()
 {
-  /* MILLISECOND MANAGER */
-  for(u8 i = 14; i >= 12; i--)
-  {
-    if(IrGate_au8TimeDisplay[i] != '9')
-    {
-      IrGate_au8TimeDisplay[i] = IrGate_au8TimeDisplay[i] + 1;
-      return;
-    }
-    else
-    {
-      IrGate_au8TimeDisplay[i] = '0';
-    }
-  }
   
-  /* SECOND MANAGER */
-  if(IrGate_au8TimeDisplay[10] != '9')
-  {
-    IrGate_au8TimeDisplay[10] = IrGate_au8TimeDisplay[10] + 1;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[10] = '0';
-  }
-  
-  if(IrGate_au8TimeDisplay[9] != '5')
-  {
-    IrGate_au8TimeDisplay[9]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[9] = '0';
-  }
-  
-  /* MINUTE MANAGER */
-  if(IrGate_au8TimeDisplay[7] != '9')
-  {
-    IrGate_au8TimeDisplay[7]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[7] = '0';
-  }
-  
-  if(IrGate_au8TimeDisplay[6] != '5')
-  {
-    IrGate_au8TimeDisplay[6]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[6] = '0';
-  }
 } /* end IrGateIncrementTimer */
 
 /*----------------------------------------------------------------------------------------------------------------------
@@ -238,13 +185,13 @@ Promises:
 */
 static void IrGateResetTimer()
 {
-  IrGate_au8TimeDisplay[14] = '0';
-  IrGate_au8TimeDisplay[13] = '0';
-  IrGate_au8TimeDisplay[12] = '0';
-  IrGate_au8TimeDisplay[10] = '0';
-  IrGate_au8TimeDisplay[9]  = '0';
-  IrGate_au8TimeDisplay[7]  = '0';
-  IrGate_au8TimeDisplay[6]  = '0';
+  timeDisplay[14] = '0';
+  timeDisplay[13] = '0';
+  timeDisplay[12] = '0';
+  timeDisplay[10] = '0';
+  timeDisplay[9]  = '0';
+  timeDisplay[7]  = '0';
+  timeDisplay[6]  = '0';
 } /* end IrGateResetTimer */
 
 

@@ -103,7 +103,7 @@ void ANTMChannelInitialize(void)
   /* If good initialization, set state to Idle */
   if(1)
   {
-    ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForButtonPressForConfiguation;
+    ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForButtonPressForConfiguration;
   }
   else
   {
@@ -203,7 +203,7 @@ static void ANTMChannelSM_WaitForButtonPressForConfiguration(void)
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForConfiguration;
     ANTMChannel_u32Timeout = G_u32SystemTime1ms;
   }
-} /* emd ANTMChannelSM_WaitForButtonPressForConfiguration
+} /* emd ANTMChannelSM_WaitForButtonPressForConfiguration */
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* In this state, the state machine is waiting for ant to be done configuring, this state is supposed to come after ANTMChannelSM_WaitForButtonPressForConfiguration */
