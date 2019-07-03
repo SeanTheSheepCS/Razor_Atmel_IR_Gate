@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\common\bin\cspybat" -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --backend -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\common\bin\cspybat" -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_32_2\settings\eie_ascii-01.Debug.general.xcl" --backend -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_32_2\settings\eie_ascii-01.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\common\bin\cspybat" -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_10_1\settings\eie_ascii-01.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\EWARM_8_32_2\common\bin\cspybat" -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_32_2\settings\eie_ascii-01.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\ENGENUICS5\Desktop\2019_camps\Sean Kenny\Day Five\IRGateCode\Razor_Atmel_IR_Gate\firmware_ascii\iar_8_32_2\settings\eie_ascii-01.Debug.driver.xcl" 
 }
