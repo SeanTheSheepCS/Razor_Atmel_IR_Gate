@@ -149,60 +149,35 @@ Promises:
 */
 static void IrGateIncrementTimer()
 {
-  /* MILLISECOND MANAGER */
-  for(u8 i = 14; i >= 12; i--)
+  u8 u8Index = 14;
+  while(u8Index > 5)
   {
-    if(IrGate_au8TimeDisplay[i] != '9')
+    if(IrGate_au8TimeDisplay[u8Index] == ':' || IrGate_au8TimeDisplay[u8Index] == '.')
     {
-      IrGate_au8TimeDisplay[i] = IrGate_au8TimeDisplay[i] + 1;
-      return;
+      u8Index = u8Index - 1;
     }
     else
     {
-      IrGate_au8TimeDisplay[i] = '0';
+      u8 u8Limit = 0;
+      if(u8Index == 9)
+      {
+        u8Limit = '5';
+      }
+      else
+      {
+        u8Limit = '9';
+      }
+      if(IrGate_au8TimeDisplay[u8Index] == u8Limit)
+      {
+        IrGate_au8TimeDisplay[u8Index] = '0';
+        u8Index = u8Index - 1;
+      }
+      else
+      {
+        IrGate_au8TimeDisplay[u8Index] = IrGate_au8TimeDisplay[u8Index] + 1;
+        return;
+      }
     }
-  }
-  
-  /* SECOND MANAGER */
-  if(IrGate_au8TimeDisplay[10] != '9')
-  {
-    IrGate_au8TimeDisplay[10] = IrGate_au8TimeDisplay[10] + 1;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[10] = '0';
-  }
-  
-  if(IrGate_au8TimeDisplay[9] != '5')
-  {
-    IrGate_au8TimeDisplay[9]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[9] = '0';
-  }
-  
-  /* MINUTE MANAGER */
-  if(IrGate_au8TimeDisplay[7] != '9')
-  {
-    IrGate_au8TimeDisplay[7]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[7] = '0';
-  }
-  
-  if(IrGate_au8TimeDisplay[6] != '5')
-  {
-    IrGate_au8TimeDisplay[6]++;
-    return;
-  }
-  else
-  {
-    IrGate_au8TimeDisplay[6] = '0';
   }
 } /* end IrGateIncrementTimer */
 
@@ -312,6 +287,13 @@ void CycleTeam()
     ANTSChannelSetAntFrequency(11);
   }
   else if(IrGate_tTeam == BLUE_TEAM)
+  {
+    IrGate_au8ReadyMessageWithTeam = "Ready For GRN Team!";
+    IrGate_tTeam = GRN_TEAM;
+    ANTMChannelSetAntFrequency(41);
+    ANTSChannelSetAntFrequency(41);
+  }
+  else if(IrGate_tTeam == GRN_TEAM)
   {
     IrGate_au8ReadyMessageWithTeam = "Ready For RED Team!";
     IrGate_tTeam = RED_TEAM;

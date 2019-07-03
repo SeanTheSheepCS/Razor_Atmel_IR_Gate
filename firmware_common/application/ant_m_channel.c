@@ -103,7 +103,7 @@ void ANTMChannelInitialize(void)
   /* If good initialization, set state to Idle */
   if(1)
   {
-    ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForButtonPressForConfiguation;
+    ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForButtonPressForConfiguration;
   }
   else
   {
@@ -231,7 +231,7 @@ static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
   if(WasButtonPressed(BUTTON1))
   {
     ButtonAcknowledge(BUTTON1);
-    DebugPrintf("Attempting to open master channel...");
+    DebugPrintf("Attempting to open ant_m_channel channel...");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitChannelOpen;
     AntOpenChannelNumber(ANT_CHANNEL_MCHANNEL);
@@ -245,10 +245,14 @@ static void ANTMChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_OPEN)
   {
-    DebugPrintf("Successfully opened master channel.");
+    DebugPrintf("Successfully opened ant_m_channel.");
     if(ANTMChannel_sChannelInfo.AntFrequency == 11)
     {
       LedOn(PURPLE);
+    }
+    else if(ANTMChannel_sChannelInfo.AntFrequency == 41)
+    {
+      LedOn(CYAN);
     }
     else if(ANTMChannel_sChannelInfo.AntFrequency == 91)
     {
@@ -260,7 +264,7 @@ static void ANTMChannelSM_WaitChannelOpen(void)
   
   if(IsTimeUp(&ANTMChannel_u32Timeout, 3000))
   {
-    DebugPrintf("Failed to open master channel.");
+    DebugPrintf("Failed to open ant_m_channel.");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_Error;
   }

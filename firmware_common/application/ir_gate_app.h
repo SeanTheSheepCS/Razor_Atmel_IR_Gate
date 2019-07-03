@@ -11,7 +11,7 @@ Type Definitions
 **********************************************************************************************************************/
 
 typedef enum {GATE_MODE_START, GATE_MODE_FINISH, GATE_MODE_INTERMEDIATE} GateModeType; //This denotes the type of gate this gate is. More info can be found in:    extra_information/the_different_modes.txt
-typedef enum {RED_TEAM, BLUE_TEAM} TeamType; //This denotes whether the gate belongs to the red team or the blue team. More info can be found in:      extra_information/team_frequencies.txt
+typedef enum {RED_TEAM, BLUE_TEAM, GRN_TEAM} TeamType; //This denotes whether the gate belongs to the red team or the blue team. More info can be found in:      extra_information/team_frequencies.txt
 typedef enum {IR_MODE_TRANSMIT_ONLY, IR_MODE_RECIEVE_ONLY} IRTransmittingOrRecievingModeType; //This denotes whether this gate is a reciever gate or a transmitter gate
 
 /**********************************************************************************************************************
