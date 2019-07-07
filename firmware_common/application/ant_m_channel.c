@@ -50,7 +50,7 @@ Global variable definitions with scope limited to this local application.
 Variable names shall start with "ANTMChannel_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type ANTMChannel_pfStateMachine;               /*!< @brief The state machine function pointer */
-static AntAssignChannelInfoType ANTMChannel_sChannelInfo;    /* The channel info to be used to open the master channel */
+static AntAssignChannelInfoType ANTMChannel_sChannelInfo;    /* The channel info to be used to open ant_m_channel */
 static u32 ANTMChannel_u32Timeout; 
 
 /**********************************************************************************************************************
@@ -68,7 +68,7 @@ Function Definitions
 /*----------------------------------------------------------------------------------------------------------------------
 Function: ANTMChannelInitialize()
 
-Description: Gives the ant master channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
+Description: Gives ant_m_channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
 
 Requires:
   - N/A
@@ -116,7 +116,7 @@ void ANTMChannelInitialize(void)
 /*----------------------------------------------------------------------------------------------------------------------
 Function: ANTMChannelSetAntFrequency(u8 newFrequency)
 
-Description: sets the frequency of the master ant channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
+Description: sets the frequency of the ant_m_channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
 
 Requires:
   - The channel is not configured/open
@@ -157,11 +157,11 @@ void ANTMChannelRunActiveState(void)
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* In the idle state, the channel is configured and opened so the master channel will send whatever message is contained in G_au8ANTMChannelMessageToSend */
+/* In the idle state, the channel is configured and opened so ant_m_channel will send whatever message is contained in G_au8ANTMChannelMessageToSend */
 static void ANTMChannelSM_Idle(void)
 {
   static u8 au8Message[8] = {0,0,0,0,0,0,0,0};
-  static u8 au8DebugMessage[] = "Master channel has sent the message: 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00";
+  static u8 au8DebugMessage[] = "ant_m_channel has sent the message: 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00";
   for(u8 i = 0; i < 8; i++)
   {
     au8Message[i] = G_au8ANTMChannelMessageToSend[i];
@@ -198,7 +198,7 @@ static void ANTMChannelSM_WaitForButtonPressForConfiguration(void)
   {
     ButtonAcknowledge(BUTTON1);
     AntAssignChannel(&ANTMChannel_sChannelInfo);
-    DebugPrintf("Attempting to configure master channel...");
+    DebugPrintf("Attempting to configure ant_m_channel...");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForConfiguration;
     ANTMChannel_u32Timeout = G_u32SystemTime1ms;
@@ -211,14 +211,14 @@ static void ANTMChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_CONFIGURED)
   {
-    DebugPrintf("Successfully configured master channel.");
+    DebugPrintf("Successfully configured ant_m_channel.");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitForButtonPressToOpenChannel;
   }
   
   if(IsTimeUp(&ANTMChannel_u32Timeout, 3000))
   {
-    DebugPrintf("Failed to configure master channel.");
+    DebugPrintf("Failed to configure ant_m_channel.");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_Error;
   }
@@ -231,7 +231,7 @@ static void ANTMChannelSM_WaitForButtonPressToOpenChannel(void)
   if(WasButtonPressed(BUTTON1))
   {
     ButtonAcknowledge(BUTTON1);
-    DebugPrintf("Attempting to open master channel...");
+    DebugPrintf("Attempting to open ant_m_channel...");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_WaitChannelOpen;
     AntOpenChannelNumber(ANT_CHANNEL_MCHANNEL);
@@ -245,7 +245,7 @@ static void ANTMChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_MCHANNEL) == ANT_OPEN)
   {
-    DebugPrintf("Successfully opened master channel.");
+    DebugPrintf("Successfully opened ant_m_channel.");
     if(ANTMChannel_sChannelInfo.AntFrequency == 11)
     {
       LedOn(PURPLE);
@@ -260,7 +260,7 @@ static void ANTMChannelSM_WaitChannelOpen(void)
   
   if(IsTimeUp(&ANTMChannel_u32Timeout, 3000))
   {
-    DebugPrintf("Failed to open master channel.");
+    DebugPrintf("Failed to open ant_m_channel.");
     DebugLineFeed();
     ANTMChannel_pfStateMachine = ANTMChannelSM_Error;
   }
