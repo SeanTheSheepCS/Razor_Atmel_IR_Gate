@@ -69,7 +69,7 @@ Function Definitions
 /*----------------------------------------------------------------------------------------------------------------------
 Function: ANTSChannelInitialize()
 
-Description: Gives the ant slave channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
+Description: Gives ant_s_channel its initial values (DOES NOT CONFIGURE OR OPEN THE CHANNEL)
 
 Requires:
   - N/A
@@ -136,7 +136,7 @@ void ANTSChannelRunActiveState(void)
 /*----------------------------------------------------------------------------------------------------------------------
 Function: ANTSChannelSetAntFrequency(u8 newFrequency)
 
-Description: sets the frequency of the slave ant channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
+Description: sets the frequency of ant_s_channel to a new frequency. DOES NOT WORK IF THE CHANNEL IS ALREADY CONFIGURED/OPEN
 
 Requires:
   - The channel is not configured/open
@@ -158,10 +158,10 @@ void ANTSChannelSetAntFrequency(u8 newFrequency)
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
-/* If the state machine got here, the channel should be configured and open. The slave channel recieves messages and saves them in G_au8ANTSChannelMessageRecieved */
+/* If the state machine got here, the channel should be configured and open. ant_s_channel recieves messages and saves them in G_au8ANTSChannelMessageRecieved */
 static void ANTSChannelSM_Idle(void)
 {
-  static u8 au8DebugMessage[] = "Slave channel has recieved the message: 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00";
+  static u8 au8DebugMessage[] = "ant_s_channel has recieved the message: 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00";
   for(u8 i = 0; i < 8; i++)
   {
     au8DebugMessage[(42 + (6*i))] = HexToASCIICharUpper(G_au8ANTSChannelMessageRecieved[i] / 16);
@@ -200,7 +200,7 @@ static void ANTSChannelSM_WaitForButtonPressForConfiguration(void)
   {
     ButtonAcknowledge(BUTTON2);
     AntAssignChannel(&ANTSChannel_sChannelInfo);
-    DebugPrintf("Attempting to configure slave channel...");
+    DebugPrintf("Attempting to configure ant_s_channel...");
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_WaitForConfiguration;
     ANTSChannel_u32Timeout = G_u32SystemTime1ms;
@@ -213,14 +213,14 @@ static void ANTSChannelSM_WaitForConfiguration(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_CONFIGURED)
   {
-    DebugPrintf("Successfully configured slave channel.");
+    DebugPrintf("Successfully configured ant_s_channel.");
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_WaitForButtonPressToOpenChannel;
   }
   
   if(IsTimeUp(&ANTSChannel_u32Timeout, 3000))
   {
-    DebugPrintf("Failed to configure slave channel.");
+    DebugPrintf("Failed to configure ant_s_channel.");
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_Error;
   }
@@ -233,7 +233,7 @@ static void ANTSChannelSM_WaitForButtonPressToOpenChannel(void)
   if(WasButtonPressed(BUTTON2))
   {
     ButtonAcknowledge(BUTTON2);
-    DebugPrintf("Attempting to open slave channel...");
+    DebugPrintf("Attempting to open ant_s_channel...");
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_WaitChannelOpen;
     AntOpenChannelNumber(ANT_CHANNEL_SCHANNEL);
@@ -247,7 +247,7 @@ static void ANTSChannelSM_WaitChannelOpen(void)
 {
   if(AntRadioStatusChannel(ANT_CHANNEL_SCHANNEL) == ANT_OPEN)
   {
-    DebugPrintf("Successfully opened slave channel.");
+    DebugPrintf("Successfully opened ant_s_channel.");
     if(ANTSChannel_sChannelInfo.AntFrequency == 11)
     {
       LedOn(BLUE);
@@ -262,7 +262,7 @@ static void ANTSChannelSM_WaitChannelOpen(void)
   
   if(IsTimeUp(&ANTSChannel_u32Timeout, 3000))
   {
-    DebugPrintf("Failed to open slave channel.");
+    DebugPrintf("Failed to open ant_s_channel.");
     DebugLineFeed();
     ANTSChannel_pfStateMachine = ANTSChannelSM_Error;
   }
