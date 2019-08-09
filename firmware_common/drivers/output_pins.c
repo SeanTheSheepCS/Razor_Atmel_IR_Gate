@@ -20,14 +20,14 @@ Variable names shall start with "OutputPin_<type>" and be declared as static.
 static fnCode_type OutputPin_pfnStateMachine;                  /*!< @brief The pin application state machine function pointer */
 
 /*!*********** %OUTPUT_PINS% EDIT BOARD-SPECIFIC GPIO DEFINITIONS BELOW ***************/
-/* Add all of the GPIO pin names for the output pins in the system.  
-The order of the definitions below must match the order of the definitions provided in configuration.h */ 
+/* Add all of the GPIO pin names for the output pins in the system.
+The order of the definitions below must match the order of the definitions provided in configuration.h */
 
 static const u32 OutputPin_au32OutputPins[OUTPUT_PINS_IN_USE] = {PA_12_BLADE_UPOMI};
-static OutputPinConfigType OutputPins_asArray[OUTPUT_PINS_IN_USE] = 
+static OutputPinConfigType OutputPins_asArray[OUTPUT_PINS_IN_USE] =
 {
   {OUTPUT_PIN_VOLTAGE_HIGH, OUTPUT_PIN_PORTA} /* UPOMI  */
-};   
+};
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: OutputPinInitialize()
@@ -46,7 +46,7 @@ void OutputPinInitialize(void)
 {
   u32 u32PortAOutputPinBitLocationMask = 0;
   u32 u32PortBOutputPinBitLocationMask = 0;
-  
+
   /* Create masks based on any output pins in the system.  It's ok to have an empty mask. */
   for(u8 i = 0; i < OUTPUT_PINS_IN_USE; i++)
   {
@@ -59,14 +59,14 @@ void OutputPinInitialize(void)
       u32PortBOutputPinBitLocationMask |= OutputPin_au32OutputPins[i];
     }
   }
-  
+
   /* Enables control on these pins */
   AT91C_BASE_PIOA->PIO_PER = u32PortAOutputPinBitLocationMask;
   AT91C_BASE_PIOB->PIO_PER = u32PortBOutputPinBitLocationMask;
   /* Makes these pins outputs only */
   AT91C_BASE_PIOA->PIO_OER = u32PortAOutputPinBitLocationMask;
   AT91C_BASE_PIOB->PIO_OER = u32PortBOutputPinBitLocationMask;
-  
+
   OutputPin_pfnStateMachine = OutputPinSM_Idle;
   G_u32ApplicationFlags |= _APPLICATION_FLAGS_OUTPUT_PINS;
   DebugPrintf("Output pin task ready\n\r");
@@ -120,7 +120,7 @@ void TurnOutputPinToThirtyEightThousandHertz(u32 u32OutputPin)
 Function: UPOMIPinToggler()
 
 Description: A helper function for use by TurnOutputPinToThirtyEightThousandHertz only.
- 
+
 Requires:
   - PA_12_BLADE_UPOMI is configured as an output pin
 
@@ -196,7 +196,7 @@ Promises:
 u32 GetOutputPinBitLocation(u8 u8Pin, OutputPinPortType opptPort)
 {
   /* Make sure the index is valid */
-  if(u8Pin < OUTPUT_PINS_IN_USE) 
+  if(u8Pin < OUTPUT_PINS_IN_USE)
   {
     /* Index is valid so check that the output pin exists on the port */
     if(OutputPins_asArray[u8Pin].ePort == opptPort)
@@ -204,9 +204,9 @@ u32 GetOutputPinBitLocation(u8 u8Pin, OutputPinPortType opptPort)
       /* Return the output pin position if the index is the correct port */
       return(OutputPin_au32OutputPins[u8Pin]);
     }
-  }  
+  }
   /* Otherwise return 0 */
-  return(0);  
+  return(0);
 }
 
 /**********************************************************************************************************************
@@ -217,5 +217,5 @@ State Machine Function Definitions
 /* The idle state of the output pin state machine does nothing... */
 void OutputPinSM_Idle(void)
 {
-  
+
 }
